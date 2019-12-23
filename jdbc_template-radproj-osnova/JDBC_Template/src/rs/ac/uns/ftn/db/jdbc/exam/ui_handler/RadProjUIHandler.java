@@ -44,10 +44,55 @@ public class RadProjUIHandler {
 			case "6":
 				handleDelete();
 				break;
-
+			case "7":
+				showMoreById();
+				break;
 			}
 
 		} while (!answer.equalsIgnoreCase("X"));
+	}
+
+	private void showMoreById() {
+		String answer;
+		List<Integer> mbrs = new ArrayList<>();
+		List<Integer> sprs = new ArrayList<>();
+		
+
+		System.out.println("MBR: ");
+		int mbr = Integer.parseInt(MainUIHandler.sc.nextLine());
+
+		System.out.println("SPR: ");
+		int spr = Integer.parseInt(MainUIHandler.sc.nextLine());
+		
+		mbrs.add(mbr);
+		sprs.add(spr);
+		
+		do {
+			System.out.println("MBR: ");
+			mbr = Integer.parseInt(MainUIHandler.sc.nextLine());
+			
+			System.out.println("Zelite li da prekinete unos? (X za da)");
+			answer = MainUIHandler.sc.nextLine();
+			
+			System.out.println("SPR: ");
+			spr = Integer.parseInt(MainUIHandler.sc.nextLine());
+			
+			System.out.println("Zelite li da prekinete unos? (X za da)");
+			answer = MainUIHandler.sc.nextLine();
+			
+			mbrs.add(mbr);
+			sprs.add(spr);
+			
+		}while(!answer.equalsIgnoreCase("X"));
+		
+		System.out.println(RadProj.getFormattedHeader());
+		try {
+			for (RadProj rp : radprojDAO.findAllById(mbrs, sprs)) {
+				System.out.println(rp);
+			}
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+		}
 	}
 
 	private void showAll() {

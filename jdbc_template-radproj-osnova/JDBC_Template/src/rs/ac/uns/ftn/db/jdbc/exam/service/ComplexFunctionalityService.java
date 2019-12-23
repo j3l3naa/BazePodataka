@@ -102,6 +102,22 @@ public class ComplexFunctionalityService {
 		}
 		
 	}
+
+
+
+
+	public static void AvgAng() {
+		// TODO Auto-generated method stub
+		try  {
+			
+			for (RadnikDTO r : radprojDAO.findWorkersMoreBrcThanAverage()) {
+				System.out.println(r);
+			}
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+		}
+		
+	}
 	
 	
 }

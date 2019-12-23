@@ -8,9 +8,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import rs.ac.uns.ftn.db.jdbc.exam.connection.ConnectionUtil_HikariCP;
 import rs.ac.uns.ftn.db.jdbc.exam.dao.RadprojDAO;
+import rs.ac.uns.ftn.db.jdbc.exam.dto.RadnikDTO;
 import rs.ac.uns.ftn.db.jdbc.exam.model.RadProj;
 import rs.ac.uns.ftn.db.jdbc.exam.model.Radnik;
 
@@ -116,40 +118,45 @@ public class RadProjDAOImpl implements RadprojDAO {
 		return radprojList;
 	}
 
-	public Iterable<RadProj> findAllById(Iterable<List<Integer>> ids) throws SQLException {
+	public Iterable<RadProj> findAllById(List<Integer> ids1, List<Integer> ids2) throws SQLException {
 		// TODO Auto-generated method stub
 		String query1 = "select mbr, spr, brc from radproj where mbr in (";
 		String query2 = " and spr in (";
-		
 		List<RadProj> radprojList = new ArrayList<>();
-		StringBuilder stringBuilderStart = new StringBuilder();
-		stringBuilderStart.append(query1);
+		StringBuilder start = new StringBuilder();
+		start.append(query1);
+		StringBuilder end = new StringBuilder();
+		end.append(query2);
 		
-		StringBuilder stringBuilderEnd = new StringBuilder();
-		stringBuilderEnd.append(query2);
-		
-		for (List<Integer> i : ids) {
-			stringBuilderStart.append("?, ");
-			stringBuilderEnd.append("?, ");
+		for (@SuppressWarnings("unused") Integer id : ids1) {
+			start.append("?,");
 		}
+		for (@SuppressWarnings("unused") Integer id : ids2) {
+			end.append("?,");
+		}
+		start.deleteCharAt(start.length() - 1);
+		end.deleteCharAt(end.length() - 1);
 		
-		stringBuilderStart.deleteCharAt(stringBuilderStart.length() - 1);
-		stringBuilderEnd.deleteCharAt(stringBuilderEnd.length() - 1);
-		
-		String query = "select * from radproj where mbr = ? and spr = ?";
+		start.append(")");
+		end.append(")");
+		start.append(end.toString());
 		
 		try (Connection connection = ConnectionUtil_HikariCP.getConnection();
-				PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+				PreparedStatement preparedStatement = connection.prepareStatement(start.toString())) {
+					
+			int i = 1;
 			
-			for (List<Integer> id : ids) {
-			preparedStatement.setInt(1, id.get(1));
-			preparedStatement.setInt(2, id.get(2));
+			for (Integer id : ids1) {
+				preparedStatement.setInt(i++, id);
+			}
 			
-				try(ResultSet resultSet = preparedStatement.executeQuery()) {
-					while(resultSet.next()) {
-						radprojList.add(new RadProj(resultSet.getInt(1), resultSet.getInt(2), resultSet.getInt(3)));
-					}
-				}
+			for (Integer id : ids2) {
+				preparedStatement.setInt(i++, id);
+			}
+			
+			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				while (resultSet.next())
+					radprojList.add(new RadProj(resultSet.getInt(1), resultSet.getInt(2), resultSet.getInt(3)));
 			}
 		}
 		return radprojList;
@@ -293,6 +300,62 @@ public class RadProjDAOImpl implements RadprojDAO {
 			}
 		
 		return angazovanja;
+	}
+
+
+
+	@Override
+	public boolean existsById(Integer id1, Integer id2) throws SQLException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Iterable<RadProj> findAllById(Iterable<List<Integer>> ids) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public HashMap<Integer, Double> findAvgAngazovanja() throws SQLException {
+		// TODO Auto-generated method stub
+		String query = "select spr, avg(brc) from radproj group by spr";
+		HashMap<Integer, Double> angazovanjaMap = new HashMap<Integer, Double>();
+		
+		try (Connection connection = ConnectionUtil_HikariCP.getConnection();
+				PreparedStatement preparedStatement = connection.prepareStatement(query);
+				ResultSet resultSet = preparedStatement.executeQuery()) {
+			
+			while (resultSet.next()) {
+				angazovanjaMap.put(resultSet.getInt(1), resultSet.getDouble(2));
+			}
+		}
+		
+		return angazovanjaMap;
+	}
+
+	@Override
+	public List<RadnikDTO> findWorkersMoreBrcThanAverage() throws SQLException {
+		// TODO Auto-generated method stub
+		List<RadnikDTO> radniciList = new ArrayList<>();
+		String query = "select distinct r.mbr, r.ime, r.prz from radnik r, radproj rp where r.mbr = rp.mbr and spr = ? and brc >= ?";
+		HashMap<Integer, Double> angazovanja = findAvgAngazovanja();
+		Set<Integer> key = angazovanja.keySet();
+		try (Connection connection = ConnectionUtil_HikariCP.getConnection(); 
+				PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+			for (Integer k : key) {
+				preparedStatement.setInt(1, k);
+				preparedStatement.setDouble(2, angazovanja.get(k));
+				
+				try (ResultSet resultSet = preparedStatement.executeQuery()) {
+					while (resultSet.next()) {
+						radniciList.add(new RadnikDTO(resultSet.getInt(1), resultSet.getString(2), resultSet.getString(3)));
+					}
+				}
+			}
+		}
+		
+		return radniciList;
 	} 
 
 }

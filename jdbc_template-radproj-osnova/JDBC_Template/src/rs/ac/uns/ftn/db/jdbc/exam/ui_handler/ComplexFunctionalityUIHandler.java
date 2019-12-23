@@ -17,7 +17,11 @@ public class ComplexFunctionalityUIHandler {
 					"ne završava na “ic”.");
 			System.out.println("\n4 - Koliko je ukupno angažovanje svih šefova na\n" + 
 					"projektima?");
-
+			System.out.println("\n5 - Prikazati mbr, ime, prz, plt radnika čiji je broj sati\n" + 
+					"angažovanja na nekom projektu veći od\n" + 
+					"prosečnog broja sati angažovanja na tom\n" + 
+					"projektu\n" + 
+					"");
 			System.out.println("\nX - Izlazak iz kompleksnih funkcionalnosti");
 
 			answer = MainUIHandler.sc.nextLine();
@@ -38,7 +42,8 @@ public class ComplexFunctionalityUIHandler {
 			case "4":
 				ComplexFunctionalityService.sefovi();
 				break;
-
+			case "5":
+				ComplexFunctionalityService.AvgAng();
 			}
 
 		} while (!answer.equalsIgnoreCase("X"));
