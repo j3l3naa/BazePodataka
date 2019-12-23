@@ -8,6 +8,7 @@ import java.util.List;
 import rs.ac.uns.ftn.db.jdbc.pozoriste.dto.PrikazivanjeDTO;
 import rs.ac.uns.ftn.db.jdbc.pozoriste.dto.PrikazivanjeDeleteDTO;
 import rs.ac.uns.ftn.db.jdbc.pozoriste.dto.PrikazivanjeScenaDTO;
+import rs.ac.uns.ftn.db.jdbc.pozoriste.model.Predstava;
 import rs.ac.uns.ftn.db.jdbc.pozoriste.model.Prikazivanje;
 
 public interface PrikazivanjeDAO extends CRUDDao<Prikazivanje,Integer>{
@@ -34,5 +35,6 @@ public interface PrikazivanjeDAO extends CRUDDao<Prikazivanje,Integer>{
 	//metoda koja obezbedjuje konekciju kao parametar da bi se transakciona obrada vrsila nad istom konekcijom
 	void save(Connection c, Prikazivanje entity) throws SQLException;
 	
+	int playsAfterSysDate(Integer idpred) throws SQLException;
 
 }

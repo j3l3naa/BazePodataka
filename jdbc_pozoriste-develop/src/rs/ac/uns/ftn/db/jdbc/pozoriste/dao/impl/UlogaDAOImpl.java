@@ -34,24 +34,55 @@ public class UlogaDAOImpl implements UlogaDAO {
 	@Override
 	public void delete(Uloga entity) throws SQLException {
 		// TODO Auto-generated method stub
+		String query = "delete from uloga where idul = ?";
+		try (Connection connection = ConnectionUtil_HikariCP.getConnection();
+				PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+			
+			preparedStatement.setInt(1, entity.getIdulo());
+			preparedStatement.executeUpdate();
+		}
 	}
 
 	@Override
 	public void deleteAll() throws SQLException {
 		// TODO Auto-generated method stub
+		String query = "delete from uloga";
+		
+		try (Connection connection = ConnectionUtil_HikariCP.getConnection();
+				PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+			
+			preparedStatement.executeUpdate();
+		}
 
 	}
 
 	@Override
 	public void deleteById(Integer id) throws SQLException {
 		// TODO Auto-generated method stub
+		String query = "delete from uloga where idul = ?";
+		try (Connection connection = ConnectionUtil_HikariCP.getConnection();
+				PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+			
+			preparedStatement.setInt(1, id);
+			preparedStatement.executeUpdate();
+		}
 
 	}
 
 	@Override
 	public boolean existsById(Integer id) throws SQLException {
 		// TODO Auto-generated method stub
-		return false;
+		
+		String query = "select * from uloga where idul = ?";
+		
+		try (Connection connection = ConnectionUtil_HikariCP.getConnection();
+				PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+			preparedStatement.setInt(1, id);
+			
+			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				return resultSet.isBeforeFirst();
+			}
+		}
 	}
 
 	/*
@@ -75,11 +106,40 @@ public class UlogaDAOImpl implements UlogaDAO {
 		}
 		return ulogaList;
 	}
-
+	/*
+	 * 	private String imeulo;
+	private String pol;
+	private String vrstaulo;
+	private int idpred;
+	 */
 	@Override
 	public Iterable<Uloga> findAllById(Iterable<Integer> ids) throws SQLException {
 		// TODO Auto-generated method stub
-		return null;
+		List<Uloga> ulogaList = new ArrayList<>();
+		String query = "select idul, imeulo, pol, vrstaulo, predstava_idpred from uloga where idul in (";
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append(query);
+		
+		for (Integer id : ids) {
+			stringBuilder.append("?, ");
+		}
+		
+		try (Connection connection = ConnectionUtil_HikariCP.getConnection();
+				PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+			int i = 1;
+			for (Integer id : ids) {
+				preparedStatement.setInt(i++, id);
+			}
+			
+			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				while(resultSet.next()) {
+					
+					ulogaList.add(new Uloga(resultSet.getInt(1), resultSet.getString(2), resultSet.getString(3), resultSet.getString(4), resultSet.getInt(5)));
+				}
+			}
+		}
+		
+		return ulogaList;
 	}
 
 	@Override
@@ -92,6 +152,8 @@ public class UlogaDAOImpl implements UlogaDAO {
 	@Override
 	public void save(Uloga entity) throws SQLException {
 		// TODO Auto-generated method stub
+		String insertCommand = "insert into uloga (idul, imeulo, pol, vrstaulo, predstava_idpred) values (?, ?, ?, ?, ?)";
+		String updateCommand = "update uloga set imeulo = ?, pol = ?, vrstaulo = ?, predstava_idpred where idul = ?";
 
 	}
 

@@ -22,6 +22,7 @@ public class PozoristeUIHandler {
 			System.out.println("4 - Unos vise pozorista");
 			System.out.println("5 - Izmena po identifikatoru");
 			System.out.println("6 - Brisanje po identifikatoru");
+			System.out.println("7 - Prikaz po vise identifikatora");
 			System.out.println("X - Izlazak iz rukovanja pozoristima");
 
 			answer = MainUIHandler.sc.nextLine();
@@ -45,10 +46,35 @@ public class PozoristeUIHandler {
 			case "6":
 				handleDelete();
 				break;
+			case "7":
+				showMoreById();
+				break;
 
 			}
 
 		} while (!answer.equalsIgnoreCase("X"));
+	}
+
+	private void showMoreById() {
+		// TODO Auto-generated method stub
+		List<Integer> idpozovi = new ArrayList<>();
+		String answer1;
+		do {
+		System.out.println("ID poz: ");
+		idpozovi.add(Integer.parseInt(MainUIHandler.sc.nextLine()));
+		
+	
+		answer1 = MainUIHandler.sc.nextLine();
+		} while(!answer1.equalsIgnoreCase("X"));
+		
+		try {
+			System.out.println(Pozoriste.getFormattedHeader());
+			for (Pozoriste p : pozoristeDAO.findAllById(idpozovi)) {
+				System.out.println(p);
+			}
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+		}
 	}
 
 	private void showAll() {

@@ -34,6 +34,7 @@ import rs.ac.uns.ftn.db.jdbc.pozoriste.dto.PrikazivanjeScenaDTO;
 import rs.ac.uns.ftn.db.jdbc.pozoriste.model.Drzava;
 import rs.ac.uns.ftn.db.jdbc.pozoriste.model.Glumac;
 import rs.ac.uns.ftn.db.jdbc.pozoriste.model.Mesto;
+import rs.ac.uns.ftn.db.jdbc.pozoriste.model.Podela;
 import rs.ac.uns.ftn.db.jdbc.pozoriste.model.Pozoriste;
 import rs.ac.uns.ftn.db.jdbc.pozoriste.model.Predstava;
 import rs.ac.uns.ftn.db.jdbc.pozoriste.model.Prikazivanje;
@@ -96,29 +97,6 @@ public class ComplexFuncionalityService {
 			e.printStackTrace();
 		}
 		
-		/*
-		 * 
-		 *  MOJE RESENJE KOJE RADIIIIIIIIIII
-		System.out.println(Predstava.getFormattedHeader());
-		try {
-			HashMap<Integer, PrikazivanjeDTO> evridz = prikazivanjeDAO.findSumAvgCountForShowingShow();
-			
-			for (Predstava p : predstavaDAO.findAll()) {
-				System.out.println(p);
-				
-				System.out.println("\t\t" + Prikazivanje.getFormattedHeader());
-				for (Prikazivanje pr : prikazivanjeDAO.findShowingByShowId(p.getIdpred())) {
-					System.out.println("\t\t" + pr);					
-				}
-				PrikazivanjeDTO pdto = evridz.get(p.getIdpred());
-				System.out.println("\t\t\tProsecan broj gledalaca: " + pdto.getProsecan_broj_gledalaca());
-				System.out.println("\t\t\tUkupan broj gledalaca: " + pdto.getUkupan_broj_gledalaca());
-			}
-		} catch (SQLException e) {
-			System.out.println(e.getMessage());
-		}
-		
-		*/
 	}
 
 	public void showComplexQuery() {
@@ -211,6 +189,10 @@ public class ComplexFuncionalityService {
 	}
 	
 	public void showActorsWithRoles() {
+		
+		// nije do kraja, mrzelo me
+		
+		
 		List<GlumciUlogeDTO> glumciList = new ArrayList<>();
 		List<OstaliGlumciDTO> ostaliGlumciList = new ArrayList<>();
 		
@@ -390,13 +372,38 @@ public class ComplexFuncionalityService {
 	public void oldPeople() {
 		// TODO Auto-generated method stub
 		
-		// nije zavrsen do kraja
+		// Mora se raditi sa klasom Calendar (ili JodaTime) - ima ugradjenu metodu koja vraca izracunat datum na osnovu razlike koju zadas
+		// .getCalculatedDate(date, -7) da vraca 7 dana unazad (poceti od danasnjeg datuma)
 		
+		System.out.println("Roles currently assigned: ");
 		try {
-			for (Glumac g : podelaDAO.findOldPeople()) {
-				System.out.println(g);
+			System.out.println(Podela.getFormattedHeader());
+			for (Podela p : podelaDAO.currentlyActiveRoles()) {
+				System.out.println(p);
 			}
 		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+		}
+		
+	}
+
+	public void showRolesAndActors() {
+		// TODO Auto-generated method stub
+		System.out.println(Uloga.getFormattedHeader());
+		
+		try {
+			for (Uloga u : ulogaDAO.findRolesNotAssigned()) {
+				System.out.println(u);
+				
+				int idsce = prikazivanjeDAO.playsAfterSysDate(u.getIdpred());
+				int idpoz = scenaDAO.findTheatreByScene(idsce);
+				
+				for (OstaliGlumciDTO g : podelaDAO.findNotActiveActors(idpoz)) {
+					System.out.println(g);
+					
+				}
+			}
+		} catch (SQLException e ) {
 			System.out.println(e.getMessage());
 		}
 		

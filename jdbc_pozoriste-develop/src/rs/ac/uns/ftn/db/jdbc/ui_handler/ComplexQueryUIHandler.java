@@ -72,6 +72,7 @@ public class ComplexQueryUIHandler {
 			case "7":
 				// TODO implementirati
 				// mrzelo me, nije tesko
+				complexQueryService.showRolesAndActors();
 				break;
 			case "8":
 				complexQueryService.showActorsWithRoles();

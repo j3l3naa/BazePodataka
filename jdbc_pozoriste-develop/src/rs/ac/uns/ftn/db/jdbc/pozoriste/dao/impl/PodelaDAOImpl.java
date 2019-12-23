@@ -18,6 +18,7 @@ import rs.ac.uns.ftn.db.jdbc.pozoriste.dto.GlumacDTO;
 import rs.ac.uns.ftn.db.jdbc.pozoriste.dto.GlumciHonorarUdeo;
 import rs.ac.uns.ftn.db.jdbc.pozoriste.dto.GlumciHonorariDTO;
 import rs.ac.uns.ftn.db.jdbc.pozoriste.dto.GlumciPlate;
+import rs.ac.uns.ftn.db.jdbc.pozoriste.dto.OstaliGlumciDTO;
 import rs.ac.uns.ftn.db.jdbc.pozoriste.model.Glumac;
 import rs.ac.uns.ftn.db.jdbc.pozoriste.model.Podela;
 import rs.ac.uns.ftn.db.jdbc.pozoriste.model.Uloga;
@@ -416,6 +417,47 @@ public class PodelaDAOImpl implements PodelaDAO{
 		}
 		
 		
+		return glumciList;
+	}
+
+	@Override
+	public List<Podela> currentlyActiveRoles() throws SQLException {
+		// TODO Auto-generated method stub
+		List<Podela> currRoles = new ArrayList<>();
+		String query = "select idpod, honorar, datumd, datump, uloga_idul, glumac_mbg from podela where datump is null";
+		/*
+	public Podela(int idPod, double honorar, Date datumd, Date datump, String uloga_idul, int glumac_mbg) { */
+				
+		try (Connection connection = ConnectionUtil_HikariCP.getConnection();
+				PreparedStatement preparedStatement = connection.prepareStatement(query);
+				ResultSet resultSet = preparedStatement.executeQuery()) {
+			
+			while(resultSet.next()) {
+				currRoles.add(new Podela(resultSet.getInt(1), resultSet.getDouble(2), new java.sql.Date(resultSet.getDate(3).getTime()), new java.sql.Date(resultSet.getDate(4).getTime()), resultSet.getString(5), resultSet.getInt(6)));
+			}
+		}
+		return currRoles;
+	}
+
+	@Override
+	public List<OstaliGlumciDTO> findNotActiveActors(Integer idpoz) throws SQLException {
+		// TODO Auto-generated method stub
+		String query = "select distinct mbg, imeg " + 
+				"from glumac, podela where " + 
+				"glumac_mbg != mbg and pozoriste_idpoz = ?";
+		List<OstaliGlumciDTO> glumciList = new ArrayList<>();
+		
+		try (Connection connection = ConnectionUtil_HikariCP.getConnection();
+				PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+			
+			preparedStatement.setInt(1, idpoz);
+			
+			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				while (resultSet.next())
+					glumciList.add(new OstaliGlumciDTO(resultSet.getInt(1), resultSet.getString(2)));
+			}
+		}
+	
 		return glumciList;
 	}
 }

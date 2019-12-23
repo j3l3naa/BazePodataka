@@ -444,6 +444,31 @@ public class PrikazivanjeDAOImpl implements PrikazivanjeDAO {
 			}
 		}
 	}
+/*
+ * 
+	public Predstava(int idpred, String nazivpred, String trajanje, int godinapre)
+ */
+	@Override
+	public int playsAfterSysDate(Integer id) throws SQLException {
+
+		String query = "select scena_idsce from prikazivanje where predstava_idpred = ? and datumpri > sysdate";
+		
+		try (Connection connection = ConnectionUtil_HikariCP.getConnection();
+				PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+			preparedStatement.setInt(1, id); 
+			
+			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+			
+			if (resultSet.isBeforeFirst()) {
+				resultSet.next(); 
+					return resultSet.getInt(1);
+			} else {
+				return -1;
+			}
+			
+			}
+		}
+	}
 	
 
 }

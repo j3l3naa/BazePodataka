@@ -9,6 +9,7 @@ import java.util.List;
 
 import rs.ac.uns.ftn.db.jdbc.pozoriste.connection.ConnectionUtil_HikariCP;
 import rs.ac.uns.ftn.db.jdbc.pozoriste.dao.ScenaDAO;
+import rs.ac.uns.ftn.db.jdbc.pozoriste.model.Pozoriste;
 import rs.ac.uns.ftn.db.jdbc.pozoriste.model.Scena;
 
 public class ScenaDAOImpl implements ScenaDAO {
@@ -102,7 +103,7 @@ public class ScenaDAOImpl implements ScenaDAO {
 		List<Scena> scenaList = new ArrayList<>();
 
 		
-		for(Integer id : ids) {
+		for(@SuppressWarnings("unused") Integer id : ids) {
 			stringBuilder.append("?,");
 		}
 		stringBuilder.deleteCharAt(stringBuilder.length() - 1);
@@ -243,7 +244,7 @@ public class ScenaDAOImpl implements ScenaDAO {
 				ResultSet resultSet = preparedStatement.executeQuery()) {
 
 			while (resultSet.next()) {
-				Scena scena = new Scena(resultSet.getInt(4), resultSet.getString(2), resultSet.getInt(3),
+				Scena scena = new Scena(resultSet.getInt(1), resultSet.getString(2), resultSet.getInt(3),
 						resultSet.getInt(4));
 				scenaList.add(scena);
 			}
@@ -265,6 +266,26 @@ public class ScenaDAOImpl implements ScenaDAO {
 			preparedStatement.setInt(4, s.getIdsce());
 			
 			preparedStatement.executeUpdate();
+		}
+	}
+
+	@Override
+	public Integer findTheatreByScene(Integer idsce) throws SQLException {
+		String query = "select pozoriste_idpoz from scena where idsce = ?";
+		
+		try (Connection connection = ConnectionUtil_HikariCP.getConnection();
+				PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+			
+			preparedStatement.setInt(1, idsce);
+			
+			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				if (resultSet.isBeforeFirst()) {
+					resultSet.next();
+					return resultSet.getInt(1);
+				} else {
+					return -1;
+				}
+			}
 		}
 	}
 

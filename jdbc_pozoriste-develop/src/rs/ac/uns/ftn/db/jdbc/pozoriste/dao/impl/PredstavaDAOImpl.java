@@ -137,7 +137,7 @@ public class PredstavaDAOImpl implements PredstavaDAO {
 
 	@Override
 	public Predstava findById(Integer id) throws SQLException {
-		String query = "select idpred, nazivpred, trajanje,godinapre from predstava where idpred in (";
+		String query = "select idpred, nazivpred, trajanje,godinapre from predstava where idpred = ?";
 		Predstava predstava = null;
 
 		try (Connection connection = ConnectionUtil_HikariCP.getConnection();

@@ -9,6 +9,35 @@ import com.zaxxer.hikari.HikariDataSource;
 public class ConnectionUtil_HikariCP {
 	private static HikariConfig hikariConfig = new HikariConfig();
 	private static HikariDataSource hikariDS;
+	
+	static {
+		hikariConfig.setJdbcUrl(ConnectionParams.LOCAL_CONNECTION_STRING);
+		hikariConfig.setUsername(ConnectionParams.USERNAME);
+		hikariConfig.setPassword(ConnectionParams.PASSWORD);
+		hikariConfig.setMaximumPoolSize(5);
+		hikariConfig.addDataSourceProperty("cachePrepStmts", "true");
+		hikariConfig.addDataSourceProperty("prepStmtsCacheSize", "250");
+		hikariConfig.addDataSourceProperty("", "");
+		hikariDS = new HikariDataSource(hikariConfig);
+	}
+	
+	private ConnectionUtil_HikariCP() {} 
+	
+	public static Connection getConnection() throws SQLException {
+		return hikariDS.getConnection();
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/*
+	private static HikariConfig hikariConfig = new HikariConfig();
+	private static HikariDataSource hikariDS;
 
 	static { // needs to be static
 		hikariConfig.setJdbcUrl(ConnectionParams.LOCAL_CONNECTION_STRING);
@@ -27,5 +56,5 @@ public class ConnectionUtil_HikariCP {
 	public static Connection getConnection() throws SQLException {
 		return hikariDS.getConnection();
 	}
-
+*/
 }

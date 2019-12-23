@@ -9,6 +9,7 @@ import rs.ac.uns.ftn.db.jdbc.pozoriste.dto.GlumacDTO;
 import rs.ac.uns.ftn.db.jdbc.pozoriste.dto.GlumciHonorarUdeo;
 import rs.ac.uns.ftn.db.jdbc.pozoriste.dto.GlumciHonorariDTO;
 import rs.ac.uns.ftn.db.jdbc.pozoriste.dto.GlumciPlate;
+import rs.ac.uns.ftn.db.jdbc.pozoriste.dto.OstaliGlumciDTO;
 import rs.ac.uns.ftn.db.jdbc.pozoriste.model.Glumac;
 import rs.ac.uns.ftn.db.jdbc.pozoriste.model.Podela;
 
@@ -30,4 +31,8 @@ public interface PodelaDAO extends CRUDDao<Podela, Integer> {
 	List<GlumciHonorariDTO> showActorsHonorar() throws SQLException;
 	
 	List<Glumac> findOldPeople() throws SQLException;
+	
+	List<Podela> currentlyActiveRoles() throws SQLException;
+	
+	List<OstaliGlumciDTO> findNotActiveActors(Integer idpoz) throws SQLException;
 }
